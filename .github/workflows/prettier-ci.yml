@@ -1,0 +1,27 @@
+name: Prettier CI
+on:
+  workflow_call:
+    inputs:
+      prettier_options:
+        description: "Options to pass to Prettier. All options are supported, except --write, which is automatically applied. Also use this input to specify files or directories to format. Options reference: https://prettier.io/docs/cli"
+        required: false
+        type: string
+      use_npm_ci:
+        description: "Whether to use npm ci instead of npm install. This is recommended for CI environments, as it ensures a clean install and faster builds. Default is false."
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: |
+          if [ "${{ inputs.use_npm_ci }}" = "true" ]; then
+            npm ci
+          else
+            npm install
+          fi
+          npx prettier --write ${{ inputs.prettier_options }}
